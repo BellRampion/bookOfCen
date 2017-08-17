@@ -15,9 +15,9 @@ int bgetline(char s[]);
 
 int century;
 int years;
+char windows;
 
 int main(){
-
 
     //ints
 	int readOrWrite;
@@ -25,6 +25,7 @@ int main(){
 	int readFunct; // For calling read
 	int i;
 	int writeFunct; // For calling write
+    int yOrN;
 
 
     //chars
@@ -35,7 +36,16 @@ int main(){
     //FILEs
     FILE *fp;
 
+    printf("Is this a Windows computer? (y/n):\n");
+    yOrN = getchar();
+    nl = getchar();
+    if (yOrN == 'y')
+        windows = 'y';
+    else windows = 'n';
+    yOrN = 0;
+
     printf("Enter any character to start. Press $ to close the program:\n");
+
     while ((c=getchar()) != '$')
     {
     	printf("Do you want to read or write? (r/w): "); /* Asks the user if they want to read information or write it */
@@ -101,7 +111,56 @@ int read(char date[], char text[], FILE *fp){ /* Function for reading from a yea
 
 int write(char text[], char date[], FILE *fp){
 
-    fp = fopen(FILENAME, "a");
+    int i, j, l;
+    i = j = l = 0;
+    int c;
+    int nl;
+
+    char command[MAXLENGTH];
+    char temp[100];
+
+    if (windows == 'n')
+    {
+        fp = fopen("linuxCommand", "r");
+        fgets(temp, 6, fp);
+        //printf("Temp: %s\n", temp);
+        fclose(fp);
+        for (i = 0; i < 5; i++){
+            command[i] = temp[i];
+            if (temp[i] == '\n')
+            {
+                i--;
+                //printf("Deleting newline...\n");
+            }
+        }
+        //printf("Command: %s\n", command);
+        command[i] = 32; //Doesn't advance i because then the '\0' wouldn't be overwritten.
+        i++;
+
+        for (i = i; i < MAXLENGTH && date[j] != '\0'; i++){
+            command[i] = date[j];
+            j++;
+        }
+    }
+    else if (windows == 'y')
+    {
+        fp = fopen("windowsCommand", "r");
+        fgets(temp, 11, fp);
+        fclose(fp);
+        printf("Functionality for Windows has not been developed yet. Please be patient.");
+    }
+    else {
+        printf("Error: it was not determined if this computer is running windows.");
+        return 1;
+    }
+    i++;
+    command[i] = '\0';
+
+    #define PRGMPARAM command
+    popen(PRGMPARAM, "w");
+
+
+    /*fp = fopen(FILENAME, "a");
     printf("Type your entry (less than 100,000 characters):\n");
     int i;
 	int c;
@@ -115,7 +174,7 @@ int write(char text[], char date[], FILE *fp){
 	}
 	text[i] = '\0';
 
-    fprintf(fp, "%s\n$", text);
+    fprintf(fp, "%s\n$", text); */
 
 
 }
